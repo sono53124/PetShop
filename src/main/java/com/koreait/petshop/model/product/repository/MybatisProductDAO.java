@@ -13,7 +13,6 @@ public class MybatisProductDAO implements ProductDAO{
 	@Autowired
 	private SqlSessionTemplate sqlSessionTemplate;
 	
-
 	@Override
 	public List selectAll() {
 		return sqlSessionTemplate.selectList("Product.selectAll");
@@ -21,14 +20,13 @@ public class MybatisProductDAO implements ProductDAO{
 
 	@Override
 	public List selectById(int subcategory_id) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
 	@Override
 	public Product select(int product_id) {
-		// TODO Auto-generated method stub
-		return null;
+		return sqlSessionTemplate.selectOne("Product.select", product_id);
 	}
 
 	public void regist(Product product) {

@@ -39,14 +39,12 @@ public class ProductServiceImpl implements ProductService{
 	
 	@Override
 	public List selectById(int subcategory_id) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
 	public Product select(int product_id) {
-		// TODO Auto-generated method stub
-		return null;
+		return productDAO.select(product_id);
 	}
 	
 	//등록
@@ -81,16 +79,16 @@ public class ProductServiceImpl implements ProductService{
 		
 		//사이즈
 		for(Psize psize : product.getPsize()) {
-			//logger.debug("선택한 사이즈는 ="+psize.getFit());
+			logger.debug("선택한 사이즈는 ="+psize.getPetfit());
 			psize.setProduct_id(product.getProduct_id());//fk대입
-			//psizeDAO.insert(psize);
+			psizeDAO.insert(psize);
 		}
 		
 		//색상
-		for(Color color : product.getColor()) {
-			//logger.debug("선택한 색상은 ="+color.getPicker());
+		for(Color color : product.getColors()) {
+			logger.debug("선택한 색상은 ="+color.getPicker());
 			color.setProduct_id(product.getProduct_id());
-			//colorDAO.insert(color);
+			colorDAO.insert(color);
 		}
 		
 	}

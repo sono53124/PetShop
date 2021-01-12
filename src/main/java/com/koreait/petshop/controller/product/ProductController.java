@@ -9,13 +9,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.koreait.petshop.model.common.FileManager;
+import com.koreait.petshop.model.domain.Product;
 import com.koreait.petshop.model.domain.SubCategory;
+import com.koreait.petshop.model.product.service.ImageServiceImpl;
 import com.koreait.petshop.model.product.service.ProductService;
 import com.koreait.petshop.model.product.service.SubCategoryService;
 import com.koreait.petshop.model.product.service.TopCategoryService;
@@ -34,6 +37,9 @@ public class ProductController {
 	private SubCategoryService subCategoryService;
 	
 	@Autowired
+	private ImageServiceImpl imageService;
+	
+	@Autowired
 	private FileManager fileManager;
 	
 	private ServletContext servletContext;
@@ -50,17 +56,14 @@ public class ProductController {
 	}
 	
 	//@GetMapping("/admin/product/list")
-		@RequestMapping(value="/admin/product/list", method=RequestMethod.GET )
-		public ModelAndView getProductList() {
-			ModelAndView mav = new ModelAndView("admin/product/product_list");
-			
-			List productList = productService.selectAll();	
-			mav.addObject("productList", productList);
+	@RequestMapping(value="/admin/product/list", method=RequestMethod.GET )
+	public ModelAndView getProductList() {
+		ModelAndView mav = new ModelAndView("admin/product/product_list");
 		
-			logger.debug("productList.size()"+productList.size());
-
+		List productList = productService.selectAll();	
+		mav.addObject("productList", productList);
 		
-			return mav;
+		return mav;
 	}
 	
 	//등록 폼
@@ -79,6 +82,24 @@ public class ProductController {
 	public List getSubList(int topcategory_id) {
 		List<SubCategory> subList=subCategoryService.selectAllById(topcategory_id);
 		return subList;
+	}
+	
+	//상세보기 요청
+	@GetMapping("/admin/product/detail")
+	public ModelAndView getDetail(int product_id) {
+		List topList=topCategoryService.selectAll();
+		Product product = productService.select(product_id);
+		SubCategory subCategory=subCategoryService.select(product.getSubcategory_id());
+		List subList=subCategoryService.selectAllById(subCategory.getTopcategory_id());
+		List addonList=imageService.selectById(product_id);
+		ModelAndView mav = new ModelAndView("admin/product/detail");
+		mav.addObject("topList", topList);
+		mav.addObject("subList", subList);
+		mav.addObject("product", product);
+		mav.addObject("subCategory",subCategory);
+		mav.addObject("addonList", addonList);
+		
+		return mav;
 	}
 	
 }

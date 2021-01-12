@@ -25,8 +25,8 @@ public class MybatisSubCategoryDAO implements SubCategoryDAO{
 
 	@Override
 	public SubCategory select(int subcategory_id) {
-		// TODO Auto-generated method stub
-		return null;
+		return sqlSessionTemplate.selectOne("SubCategory.select",subcategory_id);
+		
 	}
 
 	@Override
