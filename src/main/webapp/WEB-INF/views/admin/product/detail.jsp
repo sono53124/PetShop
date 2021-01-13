@@ -117,14 +117,23 @@ var uploadFiles=[]; //미리보기 이미지 목록
 var psize=[]; //유저가 선택한 사이즈를 담는 배열 
 var color=[]; //유저가 선택한 색상을 담는 배열 
 
-var id; //서브카테고리 아이디
-var name; //서브카테고리 이름
-var fileName;
+//값 불러올때 쓸 변수
+var id; //
+var name; //
+var main;//메인 이미지 이름
+var fileName;//추가이미지 이름
+var sizeArray=[];
+var colorArray=[];
+
 $(function(){
+		main="<%=product.getProduct_id()%>.<%=product.getFilename()%>";
 	<%for(int i=0; i<addonList.size(); i++){
 		Image addon=addonList.get(i);
-		String fileName =addon.getImage_id()+"."+addon.getFilename();%>
-		fileName ="<%=fileName%>";
+		String fileName =addon.getImage_id()+"."+addon.getFilename();
+	%>
+		fileName ="<%=fileName%>";//추가이미지 이름
+		uploadFiles.push(fileName);
+		
 		var tag="<div class=\"box\" id=\"box\">";
 		tag+="<div class=\"close\" id=\""+<%=i%>+"\">X</div>";
 		tag+="<img src=\"/resources/data/addon/"+fileName+"\">";
@@ -145,21 +154,21 @@ $(function(){
 
 	
 	//사이즈 체크 박스 값 불러오기
-	var sizeArray=[];
 	<%for(int i=0; i<product.getPsize().size(); i++){%>
 		sizeArray[<%=i%>]="<%=product.getPsize().get(i).getPetfit()%>";
 	<%}%>	
 	console.log("arr값 ",sizeArray);
 	for(var i=0; i<$("input:checkbox[name='size']").length; i++){
 		console.log("체크박스 값",$($("input:checkbox[name='size']")[i]).val());	
-		switch(sizeArray[i]){
-			case sizeArray[i]:$("input:checkbox[value='"+sizeArray[i]+"']").prop("checked",true);			
-			break;
-		}
+			switch(sizeArray[i]){
+				case sizeArray[i]:$("input:checkbox[value='"+sizeArray[i]+"']").prop("checked",true);
+				break;
+			}
 	}
+	check();//사이즈 값 넣는
 
-	//색상 체크박스+텍스트 불러오기
-	var colorArray=[];
+	
+	//색상 체크박스+텍스트 불러오기 
 	<%for(int i=0; i<product.getPsize().size(); i++){%>
 		colorArray[<%=i%>]="<%=product.getColorList().get(i).getPicker()%>";
 	<%}%>	
@@ -169,6 +178,8 @@ $(function(){
 			case colorArray[a]:
 				$($("input:checkbox[name='colorcheck']")[a]).prop("checked",true);
 				$($("input:text[name='color']")[a]).prop("value",colorArray[a]);
+				var c =colorArray[a];
+				color.push(c);
 		}
 	}
 });
@@ -253,24 +264,7 @@ $(function(){
 	
 	//사이즈 체크박스 이벤트 구현 
 	$("input[name='size']").on("click", function(e){
-		//var ch = e.target;//이벤트 일으킨 주체컴포넌트 즉 체크박스
-		//체크박스의 길이 얻기 
-		var ch=$("input[name='size']");
-		var len =$(ch).length; //반복문이용하려고..
-	
-		
-		psize=[];//배열 초기화
-		console.log("채우기 전 psize의 길이는 ",psize.length);
-		
-		for(var i=0;i<len;i++){
-			//만일 체크가 되어있다면, 기존 배열을 모두 지우고, 체크된 체크박스 값만 배열에 넣자!!
-			if($($(ch)[i]).is(":checked")){
-				psize.push($($(ch)[i]).val());
-			}
-			console.log(i,"번째 체크박스 상태는 ", $($(ch)[i]).is(":checked"));
-		}		
-		console.log("psize의 길이는 ",psize.length);
-		console.log("서버에 전송할 사이즈 배열의 구성은 ", psize);
+		check();
 	});
 	
 	//컬러 체크박스 이벤트
@@ -278,6 +272,7 @@ $(function(){
 		//alert($($("input[type='color']")[0]).val());
 		//var ch = e.target;//이벤트 일으킨 주체컴포넌트 즉 체크박스
 		//체크박스의 길이 얻기 
+		
 		var ch=$("input[name='colorcheck']");
 		var len =$(ch).length; //반복문이용하려고..
 	
@@ -299,6 +294,26 @@ $(function(){
 	});
 	
 });
+function check(){
+	//var ch = e.target;//이벤트 일으킨 주체컴포넌트 즉 체크박스
+	//체크박스의 길이 얻기 
+	var ch=$("input[name='size']");
+	var len =$(ch).length; //반복문이용하려고..
+
+	
+	psize=[];//배열 초기화
+	console.log("채우기 전 psize의 길이는 ",psize.length);
+	
+	for(var i=0;i<len;i++){
+		//만일 체크가 되어있다면, 기존 배열을 모두 지우고, 체크된 체크박스 값만 배열에 넣자!!
+		if($($(ch)[i]).is(":checked")){
+			psize.push($($(ch)[i]).val());
+		}
+		console.log(i,"번째 체크박스 상태는 ", $($(ch)[i]).is(":checked"));
+	}		
+	console.log("psize의 길이는 ",psize.length);
+	console.log("서버에 전송할 사이즈 배열의 구성은 ", psize);
+}
 
 function getSubList(obj){
 	//alert($(obj).val());
@@ -349,41 +364,74 @@ function preview(file, index, c){
 }
 
 function edit(){
-	var formData = new FormData(document.getElementById('data'));
-	
-	$.each(uploadFiles, function( i, file){
-		formData.append("addImg", file,  file.name);
-		console.log(file.name);
-	});	
-	
-	//폼데이터에 에디터의 값 추가하기!!
-	formData.append("detail", CKEDITOR.instances["detail"].getData());
-	for(var i=0;i<psize.length;i++){
-		console.log("psize["+i+"]번째 form data 추가", psize[i]);
-		formData.append("psize["+i+"].petfit", psize[i]);
-	}
-	for(var i=0;i<color.length;i++){
-		console.log("color i번째 form data 추가", color[i]);
-		formData.append("color["+i+"].picker", color[i]);
-	}
-	/* console.log($('form [name="topcategory_id"]').val());
-	console.log($('form [name="subcategory_id"]').val());
-	console.log($('form [name="price"]').val());
-	console.log($('form [name="detail"]').val()); */
-	$.ajax({
-		url:"/async/admin/product/update",
-		data:formData,
-		contentType:false,
-		processData:false,
-		type:"post",
-		success:function(responseData){
-			if(responseData.resultCode==1){
-				alert(responseData.msg);
-			}else{
-				alert(responseData.msg);
-			}
+	if(confirm("수정하시겠습니까?")){
+		var formData = new FormData(document.getElementById('data'));
+		
+		$.each(uploadFiles, function( i, file){
+			formData.append("addImg", file,  file.name);
+			console.log(file.name);
+		});
+		
+		//폼데이터에 에디터의 값 추가하기!!
+		formData.append("detail", CKEDITOR.instances["detail"].getData());
+		for(var i=0;i<psize.length;i++){
+			console.log("psize["+i+"]번째 form data 추가", psize[i]);
+			formData.append("psize["+i+"].petfit", psize[i]);
 		}
-	});
+		for(var i=0;i<color.length;i++){
+			console.log("color i번째 form data 추가", color[i]);
+			formData.append("color["+i+"].picker", color[i]);
+		}
+		console.log($('form [name="topcategory_id"]').val());
+		console.log($('form [name="subcategory_id"]').val());
+		console.log($('form [name="price"]').val());
+		console.log($('form [name="detail"]').val());
+		console.log("formData : ",formData);
+		console.log("color : ",color);
+		console.log("psize : ",psize);
+		/* $.ajax({
+			url:"/async/admin/product/update",
+			data:formData,
+			contentType:false,
+			processData:false,
+			type:"post",
+			success:function(responseData){
+				if(responseData.resultCode==1){
+					alert(responseData.msg);
+				}else{
+					alert(responseData.msg);
+				}
+			}
+		}); */
+	}
+}
+
+function del(){
+	if(confirm("삭제하시겠습니까?")){
+		var formData = new FormData(document.getElementById('data'));
+		
+		formData.append("delRep", main);
+		
+		for(var i=0; i<uploadFiles.length; i++){
+			formData.append("delAdd["+i+"]", uploadFiles);
+		}
+		
+		$.ajax({
+				url:"/async/admin/product/del",
+				data:formData,
+				contentType:false,
+				processData:false,
+				type:"post",
+				success:function(responseData){
+					if(responseData.resultCode==1){
+						alert(responseData.msg);
+						location.href=responseData.url;
+					}else{
+						alert(responseData.msg);
+					}
+				}
+		});
+	}
 }
 
 </script>
@@ -396,7 +444,7 @@ function edit(){
 			<h4>상품 상세보기</h4>
 		</div>
 		<form id="data">
-						
+				<input type="hidden" name="product_id" value="<%=product.getProduct_id()%>"/>		
 				<select name="topcategory_id">
 					<option value="<%=topList.size()+1%>">상위 카테고리</option>
 					<%for(TopCategory topCategory : topList){ %>

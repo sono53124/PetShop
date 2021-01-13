@@ -39,7 +39,18 @@ public class FileManager {
 			e.printStackTrace();
 		}
 	}
-	
+	public void delFile(File file){  
+		if( file.exists() ){
+			if(file.delete()){ 
+				System.out.println("파일삭제 성공"); 
+			}else{ 
+				System.out.println("파일삭제 실패"+file); 
+			} 
+		}else{ 
+			System.out.println("파일이 존재하지 않습니다."+file); 
+			
+		} 
+	} 
 }
 
 

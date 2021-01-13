@@ -11,5 +11,8 @@
 		select * from psize where product_id=#{product_id}
 	</select>
 	
+	<delete id="delete" parameterType="int">
+		delete from psize where product_id = #{product_id}
+	</delete>
 	
 </mapper>

@@ -1,11 +1,15 @@
 package com.koreait.petshop.controller.product;
 
+import java.io.File;
+import java.util.List;
+
 import javax.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -76,4 +80,37 @@ public class RestProductController implements ServletContextAware{
 
 		return messageData;
 	}
+	
+	//수정
+	@PostMapping(value="/admin/product/update")
+	@ResponseBody
+	public MessageData getProductEdit() {
+		return null;
+	}
+	
+	//삭제
+	//삭제요청
+	@PostMapping("/admin/product/del")
+	@ResponseBody
+	public MessageData getDelete(Product product) {
+		//삭제
+		productService.delete(product.getProduct_id());
+		
+		//파일 삭제
+		String basic=product.getDelRep();
+		fileManager.delFile(new File(fileManager.getSaveBasicDir()+File.separator+basic));
+		for(int i=0; i<product.getDelAdd().size(); i++) {
+			List addon=product.getDelAdd();
+			fileManager.delFile(new File(fileManager.getSaveAddonDir()+File.separator+(String)addon.get(i)));
+		}
+		
+		MessageData messageData = new MessageData();
+		messageData.setResultCode(1);
+		messageData.setMsg("삭제완료");
+		messageData.setUrl("/admin/product/list");
+		
+		return messageData;
+	}
+	
+	
 }

@@ -42,8 +42,10 @@ public class MybatisProductDAO implements ProductDAO{
 
 	@Override
 	public void delete(int product_id) {
-		// TODO Auto-generated method stub
-		
+		sqlSessionTemplate.delete("Color.delete", product_id);
+		sqlSessionTemplate.delete("Image.delete", product_id);
+		sqlSessionTemplate.delete("Psize.delete", product_id);
+		sqlSessionTemplate.delete("Product.delete", product_id);
 	}
 
 }

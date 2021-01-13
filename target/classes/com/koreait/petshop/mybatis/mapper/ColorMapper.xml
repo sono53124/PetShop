@@ -9,4 +9,8 @@
 	<select id="selectByProductId" parameterType="int" resultType="Color">
 		select * from color where product_id=#{product_id}
 	</select>
+	
+	<delete id="delete" parameterType="int">
+		delete from color where product_id=#{product_id}
+	</delete>
 </mapper>

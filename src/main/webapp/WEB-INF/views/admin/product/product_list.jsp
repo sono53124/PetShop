@@ -27,6 +27,15 @@ th, td {
 tr:nth-child(even) {
   background-color: #f2f2f2;
 }
+button{
+	background-color: #ca1515;
+	color: white;
+	padding: 12px 20px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	margin : 10px 10px 0px 0px;
+}
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
