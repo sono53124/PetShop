@@ -3,12 +3,12 @@
 <mapper namespace="Product">
 
 	<!-- 상품 목록 보여주기 -->
-	<resultMap id="productSubCategoryMap" type="Product">
-		<id column="product_id" property="product_id" />
-		<result column="product_name" property="product_name" />
-		<result column="price" property="price" />
-		<result column="detail" property="detail" />
-		<result column="filename" property="filename" />
+	<resultMap id="productSubCategoryMap" 		type="Product">
+		<id column="product_id" 							property="product_id" />
+		<result column="product_name" 				property="product_name" />
+		<result column="price" 							property="price" />
+		<result column="detail" 							property="detail" />
+		<result column="filename" 						property="filename" />
 	</resultMap>
 	<select id="selectAll" resultMap="productSubCategoryMap">
 		select * from product order by product_id desc
@@ -25,7 +25,12 @@
 			select seq_product.currval as product_id from dual
 		</selectKey>
 	</insert>
-
+	
+	<select id="selectById" parameterType="int" resultType="Product">
+		select * from product where subcategory_id=#{subcategory_id}
+	</select>
+	
+	
 	<!-- 상세보기 -->
 	<resultMap  id="joinPsizeColorScoreImage" 	type="Product">
 		<id column="product_id" 							property="product_id"/>
@@ -44,7 +49,7 @@
 		<!-- 사이즈 -->
 		<collection 
 			column="product_id" 
-			property="psize"
+			property="psizeList"
 			javaType="java.util.List"
 			ofType="Psize"
 			select="Psize.selectByProductId"
@@ -74,10 +79,15 @@
 		select * from product where product_id =#{product_id}
 	</select>
 
+	<update id="update" parameterType="Product" >
+		update product set subcategory_id=#{subCategory.subcategory_id}, product_name=#{product_name}, price=#{price},
+		detail=#{detail},filename=#{filename} where product_id = #{product_id}
+	</update>
+
 	<delete id="delete" parameterType="int" >
 		delete from product where product_id=#{product_id}
 	</delete>
-
+	
 </mapper>
 
 

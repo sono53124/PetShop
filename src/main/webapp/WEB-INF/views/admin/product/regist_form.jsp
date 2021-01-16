@@ -53,6 +53,7 @@ input[type=button]:hover {
 	height:180px;
 	border:1px solid #ced4da;
 	border-radius: 5px 5px 5px 5px;
+	overflow: auto;
 }
 .filebox input[type="file"] { 
 	position: absolute; 
@@ -140,7 +141,11 @@ $(function(){
 		for(var i=0;i<fileList.length;i++){
 			uploadFiles.push(fileList[i]); //fileList안의 요소들을 일반배열에 옮겨심기 
 			//왜 심었나? 배열이 지원하는 여러 메서드들을 활용하기 위해...(ex : indexOf..)
-			preview(uploadFiles[i], i,"#dragArea"); //파일 요소 하나를 넘기기
+			if(fileList.length==1){
+				preview(fileList[i], i,"#dragArea"); //파일 요소 하나를 넘기기							
+			}else{
+				preview(uploadFiles[i], i,"#dragArea"); //파일 요소 하나를 넘기기								
+			}
 		}
 	});
 	
@@ -299,7 +304,7 @@ function regist(){
 	});	
 	
 	//폼데이터에 에디터의 값 추가하기!!
-	formData.append("detail", CKEDITOR.instances["detail"].getData());
+	//formData.append("detail", CKEDITOR.instances["detail"].getData());
 	for(var i=0;i<psize.length;i++){
 		console.log("psize["+i+"]번째 form data 추가", psize[i]);
 		formData.append("psize["+i+"].petfit", psize[i]);
@@ -360,9 +365,8 @@ function regist(){
 					<input type="file" id="ex_filename" class="upload-hidden" name="repImg"> 
 				</div>
 				
-				<div id="dragArea">
-					<p>등록할 이미지를 드래그 해주세요.</p>
-				</div>
+				등록할 이미지를 드래그 해주세요.
+				<div id="dragArea"></div>
 				
 				<p>
 					XS<input type="checkbox" 	name="size" value="XS">
@@ -374,6 +378,7 @@ function regist(){
 				</p>
 				
 				<p>
+				원하는 색상을 적고 체크해주세요
 					<input type="checkbox" 	name="colorcheck">
 					<input type="text" name="color" placeholder="색상">				
 					<input type="checkbox" 	name="colorcheck">

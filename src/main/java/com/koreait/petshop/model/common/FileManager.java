@@ -39,6 +39,7 @@ public class FileManager {
 			e.printStackTrace();
 		}
 	}
+	
 	public void delFile(File file){  
 		if( file.exists() ){
 			if(file.delete()){ 
@@ -50,7 +51,7 @@ public class FileManager {
 			System.out.println("파일이 존재하지 않습니다."+file); 
 			
 		} 
-	} 
+	}
 }
 
 

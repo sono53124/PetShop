@@ -10,6 +10,6 @@ public interface ColorDAO {
 	public Color select(int color_id);
 	public void insert(Color color);
 	public void update(Color color);
-	public void delete(int color_id);
+	public void delete(int product_id);
 	
 }

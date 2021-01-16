@@ -20,8 +20,7 @@ public class MybatisProductDAO implements ProductDAO{
 
 	@Override
 	public List selectById(int subcategory_id) {
-		
-		return null;
+		return sqlSessionTemplate.selectList("Product.selectById", subcategory_id);
 	}
 
 	@Override
@@ -36,15 +35,12 @@ public class MybatisProductDAO implements ProductDAO{
 
 	@Override
 	public void update(Product product) {
-		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("Product.update", product);
 		
 	}
 
 	@Override
 	public void delete(int product_id) {
-		sqlSessionTemplate.delete("Color.delete", product_id);
-		sqlSessionTemplate.delete("Image.delete", product_id);
-		sqlSessionTemplate.delete("Psize.delete", product_id);
 		sqlSessionTemplate.delete("Product.delete", product_id);
 	}
 

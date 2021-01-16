@@ -76,7 +76,7 @@ $(function(){
 				<%if(num<1)break; %>
 				<%Product product = (Product)productList.get(curPos++); %>
 				<tr>
-					<td><a href="/admin/product/detail?product_id=<%=product.getProduct_id()%>"><%=num--%></td>
+					<td><a href="/admin/product/detail?product_id=<%=product.getProduct_id()%>"><%=num--%></a></td>
 					<td><img src="/resources/data/basic/<%=product.getProduct_id()%>.<%=product.getFilename()%>" width="50px"></td>
 					<td><%=product.getSubcategory_id() %></td>
 					<td><%=product.getProduct_name() %></td>

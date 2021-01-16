@@ -31,7 +31,7 @@ public class ProductServiceImpl implements ProductService{
 	private PsizeDAO psizeDAO;
 	@Autowired
 	private ColorDAO colorDAO;
-	
+
 	@Override
 	public List selectAll() {
 		return productDAO.selectAll();
@@ -39,7 +39,7 @@ public class ProductServiceImpl implements ProductService{
 	
 	@Override
 	public List selectById(int subcategory_id) {
-		return null;
+		return productDAO.selectById(subcategory_id);
 	}
 	
 	@Override
@@ -94,14 +94,59 @@ public class ProductServiceImpl implements ProductService{
 	}
 	
 	@Override
-	public void update(Product product) {
-		// TODO Auto-generated method stub
+	public void update(FileManager fileManager,Product product) {
 		
+		colorDAO.delete(product.getProduct_id());
+		psizeDAO.delete(product.getProduct_id()); 
+		//사이즈 삭제 후 재등록 
+		for(int i=0;i<product.getPsize().length;i++) { 
+			Psize psize= product.getPsize()[i];
+			psize.setProduct_id(product.getProduct_id()); psizeDAO.insert(psize); 
+		} 
+		//컬러삭제후 재등록 
+		for(int i=0; i<product.getColors().length;i++) { 
+			Color color =product.getColors()[i]; color.setProduct_id(product.getProduct_id());
+			colorDAO.insert(color); 
+		}
+		if(product.getAddImg()!=null) {			
+			//추가 이미지 재등록
+			for(int i=0; i<product.getAddImg().length;i++) {				
+				System.out.println("삭제할??"+product.getAddImg());
+				MultipartFile file=product.getAddImg()[i];
+				String ext=fileManager.getExtend(file.getOriginalFilename());
+				
+				Image image = new Image();
+				image.setProduct_id(product.getProduct_id()); //fk
+				image.setFilename(ext); //확장자 넣기
+				imageDAO.insert(image);
+				
+				String addImg = image.getImage_id()+"."+fileManager.getExtend(file.getOriginalFilename());
+				fileManager.saveFile(fileManager.getSaveAddonDir()+File.separator+addImg, file);
+			}
+		} 
+			
+		if(product.getRepImg().getOriginalFilename()!="") {
+			//기존 메인 이미지 삭제
+			System.out.println("여긴가?"+product.getRepImg().getOriginalFilename());
+			fileManager.delFile(new File(fileManager.getSaveBasicDir()+File.separator+product.getProduct_id()+"."+product.getFilename()));			
+			System.out.println("여긴가?"+product.getFilename());
+			//메인 이미지 재등록
+			String ext=fileManager.getExtend(product.getRepImg().getOriginalFilename());
+			String basicImg = product.getProduct_id()+"."+ext;
+			fileManager.saveFile(fileManager.getSaveBasicDir()+File.separator+basicImg, product.getRepImg());
+			product.setFilename(ext);
+		}
+		System.out.println("getfilename"+product.getFilename());
+		productDAO.update(product);
 	}
 
 	@Override
-	public void delete(int product_id) {
-		productDAO.delete(product_id);
+	public void delete(Product product) {
+		
+		//db에서 삭제
+		colorDAO.delete(product.getProduct_id());
+		psizeDAO.delete(product.getProduct_id());
+		productDAO.delete(product.getProduct_id());
 	}
 
 }

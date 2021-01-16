@@ -1,8 +1,5 @@
 package com.koreait.petshop.controller.product;
 
-import java.io.File;
-import java.util.List;
-
 import javax.servlet.ServletContext;
 
 import org.slf4j.Logger;
@@ -18,8 +15,10 @@ import org.springframework.web.context.ServletContextAware;
 import com.koreait.petshop.model.common.FileManager;
 import com.koreait.petshop.model.common.MessageData;
 import com.koreait.petshop.model.domain.Color;
+import com.koreait.petshop.model.domain.Image;
 import com.koreait.petshop.model.domain.Product;
 import com.koreait.petshop.model.domain.Psize;
+import com.koreait.petshop.model.product.service.ImageService;
 import com.koreait.petshop.model.product.service.ProductService;
 import com.koreait.petshop.model.product.service.SubCategoryService;
 import com.koreait.petshop.model.product.service.TopCategoryService;
@@ -34,6 +33,9 @@ public class RestProductController implements ServletContextAware{
 	
 	@Autowired
 	private SubCategoryService subCategoryService;
+	
+	@Autowired
+	private ImageService imageService;  
 	
 	@Autowired
 	private ProductService productService;
@@ -77,15 +79,37 @@ public class RestProductController implements ServletContextAware{
 		messageData.setResultCode(1);
 		messageData.setMsg("등록성공.");
 		messageData.setUrl("/admin/product/list");
-
+		
 		return messageData;
 	}
 	
 	//수정
 	@PostMapping(value="/admin/product/update")
 	@ResponseBody
-	public MessageData getProductEdit() {
-		return null;
+	public MessageData getProductEdit(Product product) {
+		
+		if(product.getEditAdd()!=null) {			
+			for(int i=0; i<product.getEditAdd().length;i++) {			
+				logger.info("이미지 아이디 : "+product.getEditAdd()[i]);
+				imageService.update(fileManager,product.getEditAdd()[i]);
+			}
+		}
+		productService.update(fileManager,product);
+		
+		MessageData messageData= new MessageData();
+		messageData.setMsg("수정성공");
+		messageData.setUrl("redirect:/admin/product/detail?product_id="+product.getProduct_id());
+		/*
+		 * logger.info("하위카테고리 "+product.getSubcategory_id());
+		 * logger.info("상품명 "+product.getProduct_name());
+		 * logger.info("가격 "+product.getPrice());
+		 * logger.info("상세내용 "+product.getDetail());
+		 * 
+		 * for(Color color : product.getColors()) { logger.info(""+color.getPicker()); }
+		 * for(Psize psize : product.getPsize()) { logger.info(""+psize.getPetfit()); }
+		 */
+		
+		return messageData;
 	}
 	
 	//삭제
@@ -93,16 +117,11 @@ public class RestProductController implements ServletContextAware{
 	@PostMapping("/admin/product/del")
 	@ResponseBody
 	public MessageData getDelete(Product product) {
-		//삭제
-		productService.delete(product.getProduct_id());
+		//이미지,파일 삭제
+		imageService.delete(fileManager,product);
 		
-		//파일 삭제
-		String basic=product.getDelRep();
-		fileManager.delFile(new File(fileManager.getSaveBasicDir()+File.separator+basic));
-		for(int i=0; i<product.getDelAdd().size(); i++) {
-			List addon=product.getDelAdd();
-			fileManager.delFile(new File(fileManager.getSaveAddonDir()+File.separator+(String)addon.get(i)));
-		}
+		//상품 삭제
+		productService.delete(product);
 		
 		MessageData messageData = new MessageData();
 		messageData.setResultCode(1);

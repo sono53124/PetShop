@@ -13,9 +13,17 @@
 		</selectKey>
 	</insert>
 	
+	<select id="select" parameterType="int" resultType="Image">
+		select * from image where image_id=#{image_id}
+	</select>
+	
 	<select id="selectByProductId" parameterType="int" resultType="Image">
 		select * from Image where product_id=#{product_id}
 	</select>
+	
+	<delete id="update" parameterType="int">
+		delete from image where image_id=#{image_id}
+	</delete>
 	
 	<delete id="delete" parameterType="int">
 		delete from image where product_id=#{product_id}

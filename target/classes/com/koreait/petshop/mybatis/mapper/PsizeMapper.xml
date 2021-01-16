@@ -11,6 +11,10 @@
 		select * from psize where product_id=#{product_id}
 	</select>
 	
+	<update id="update" parameterType="Psize">
+		update psize set petfit=#{petfit} where product_id=#{product_id}
+	</update>
+	
 	<delete id="delete" parameterType="int">
 		delete from psize where product_id = #{product_id}
 	</delete>

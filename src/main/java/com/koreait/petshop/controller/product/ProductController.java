@@ -1,12 +1,10 @@
 package com.koreait.petshop.controller.product;
 
-import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +15,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 
 import com.koreait.petshop.model.common.FileManager;
-import com.koreait.petshop.model.common.MessageData;
+import com.koreait.petshop.model.common.Pager;
+import com.koreait.petshop.model.domain.Member;
 import com.koreait.petshop.model.domain.Product;
+import com.koreait.petshop.model.domain.Review;
 import com.koreait.petshop.model.domain.SubCategory;
 import com.koreait.petshop.model.product.service.ImageServiceImpl;
 import com.koreait.petshop.model.product.service.ProductService;
 import com.koreait.petshop.model.product.service.SubCategoryService;
 import com.koreait.petshop.model.product.service.TopCategoryService;
+import com.koreait.petshop.model.review.service.ReviewService;
 
 @Controller
 public class ProductController {
@@ -46,6 +46,12 @@ public class ProductController {
 	
 	@Autowired
 	private FileManager fileManager;
+	
+	@Autowired
+	private ReviewService reviewService;
+	
+	@Autowired
+	private Pager pager;
 	
 	private ServletContext servletContext;
 	
@@ -106,5 +112,82 @@ public class ProductController {
 		
 		return mav;
 	}
+	
+	
+	/**************************************
+	 * shop페이지 구현하기
+	 * **************************************/
+	//상품 목록 보여주기
+	@RequestMapping(value="/shop/product/list", method=RequestMethod.GET)
+	public ModelAndView getShopProductList(HttpSession session, int subcategory_id,HttpServletRequest request) {
+		
+		//회원 정보 가져오기
+		/*
+		 * Member member = (Member)session.getAttribute("member");
+		 * //review.setMember_id(member.getMember_id()); review.setMember(member);
+		 */
+		List topList = topCategoryService.selectAll();//상품 카테고리 가져오기
+		List productList = productService.selectById(subcategory_id);
+		
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("topList", topList);
+		//mav.addObject("productList", productList);
+		logger.info("subcategory_id :  "+subcategory_id);
+		logger.info("product.size() : "+productList.size());
+		pager.init(request, productList);
+		mav.addObject("pager",pager);
+		mav.addObject("productList",productList);		
+		mav.setViewName("shop/product/list");
+		
+		return mav;
+	}
+	
+	//상위에 소속된 모든 하위 보여주기
+	@RequestMapping(value="/shop/product/listAll", method=RequestMethod.GET)
+	public ModelAndView getProductAll() {
+		
+		List productList = productService.selectAll();
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("productList",productList);
+	
+		mav.setViewName("shop/product/listAll");
+		
+		
+		return mav;
+	}
+	
+
+	//상품상세 보기 요청 
+	@RequestMapping(value="/shop/product/detail", method=RequestMethod.GET)
+	public ModelAndView getShopProductDetail(Review review,HttpSession session ,HttpServletRequest request,int product_id) {
+		
+		Member member = (Member)session.getAttribute("member");
+		//review.setMember_id(member.getMember_id());
+		review.setMember(member);
+	
+		Product product = productService.select(product_id);//상품 한건 가져오기
+		//Review review = (Review)session.getAttribute("review");
+		//logger.debug("review:"+review);
+		//review.setProduct_id(product.getProduct_id());
+		List topList = topCategoryService.selectAll();//상품카테고리 목록	
+		List reviewList = reviewService.selectAll(product.getProduct_id());
+	
+		pager.init(request, reviewList);
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("topList", topList);
+		mav.addObject("product",product);
+		mav.addObject("reviewList",reviewList);
+		mav.addObject("review",review);
+		mav.addObject("member",member);
+		//mav.addObject("review",review);
+		mav.addObject("pager", pager);
+	
+		mav.setViewName("shop/product/detail");
+		
+		logger.debug("product_id"+product_id);
+		
+		return mav;
+	}
+	
 	
 }
