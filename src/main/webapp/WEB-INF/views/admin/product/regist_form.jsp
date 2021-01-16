@@ -199,24 +199,7 @@ $(function(){
 	
 	//사이즈 체크박스 이벤트 구현 
 	$("input[name='size']").on("click", function(e){
-		//var ch = e.target;//이벤트 일으킨 주체컴포넌트 즉 체크박스
-		//체크박스의 길이 얻기 
-		var ch=$("input[name='size']");
-		var len =$(ch).length; //반복문이용하려고..
-	
-		
-		psize=[];//배열 초기화
-		console.log("채우기 전 psize의 길이는 ",psize.length);
-		
-		for(var i=0;i<len;i++){
-			//만일 체크가 되어있다면, 기존 배열을 모두 지우고, 체크된 체크박스 값만 배열에 넣자!!
-			if($($(ch)[i]).is(":checked")){
-				psize.push($($(ch)[i]).val());
-			}
-			console.log(i,"번째 체크박스 상태는 ", $($(ch)[i]).is(":checked"));
-		}		
-		console.log("psize의 길이는 ",psize.length);
-		console.log("서버에 전송할 사이즈 배열의 구성은 ", psize);
+		sizeCheck();
 	});
 	
 	
@@ -225,24 +208,50 @@ $(function(){
 		//alert($($("input[type='color']")[0]).val());
 		//var ch = e.target;//이벤트 일으킨 주체컴포넌트 즉 체크박스
 		//체크박스의 길이 얻기 
-		var ch=$("input[name='colorcheck']");
-		var len =$(ch).length; //반복문이용하려고..
-	
-		color=[];//배열 초기화
-		//console.log("채우기 전 color의 길이는 ",color.length);
-			
-		for(var i=0;i<len;i++){
-			//만일 체크가 되어있다면, 기존 배열을 모두 지우고, 체크된 체크박스 값만 배열에 넣자!!
-			if($($(ch)[i]).is(":checked")){				
-				color.push($($("input[name='color']")[i]).val());
-			}
-			//console.log(i,"번째 체크박스 상태는 ", $($(ch)[i]).is(":checked"));
-		}		
-		console.log("color의 길이는 ",color.length);
-		console.log("서버에 전송할 컬러 배열의 구성은 ", color);
+		colorCheck();
 	});
 	
 });
+
+function sizeCheck(){
+	//var ch = e.target;//이벤트 일으킨 주체컴포넌트 즉 체크박스
+	//체크박스의 길이 얻기 
+	var ch=$("input[name='size']");
+	var len =$(ch).length; //반복문이용하려고..
+
+	
+	psize=[];//배열 초기화
+	console.log("채우기 전 psize의 길이는 ",psize.length);
+	
+	for(var i=0;i<len;i++){
+		//만일 체크가 되어있다면, 기존 배열을 모두 지우고, 체크된 체크박스 값만 배열에 넣자!!
+		if($($(ch)[i]).is(":checked")){
+			psize.push($($(ch)[i]).val());
+		}
+		console.log(i,"번째 체크박스 상태는 ", $($(ch)[i]).is(":checked"));
+	}		
+	console.log("psize의 길이는 ",psize.length);
+	console.log("서버에 전송할 사이즈 배열의 구성은 ", psize);		
+}
+
+function colorCheck(){
+	var ch=$("input[name='colorcheck']");
+	var len =$(ch).length; //반복문이용하려고..
+
+	color=[];//배열 초기화
+	//console.log("채우기 전 color의 길이는 ",color.length);
+		
+	for(var i=0;i<len;i++){
+		//만일 체크가 되어있다면, 기존 배열을 모두 지우고, 체크된 체크박스 값만 배열에 넣자!!
+		if($($(ch)[i]).is(":checked")){				
+			color.push($($("input[name='color']")[i]).val());
+		}
+		//console.log(i,"번째 체크박스 상태는 ", $($(ch)[i]).is(":checked"));
+	}		
+	console.log("color의 길이는 ",color.length);
+	console.log("서버에 전송할 컬러 배열의 구성은 ", color);
+}
+
 
 function getSubList(obj){
 	//alert($(obj).val());

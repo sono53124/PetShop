@@ -126,10 +126,9 @@ public class ProductServiceImpl implements ProductService{
 		} 
 			
 		if(product.getRepImg().getOriginalFilename()!="") {
-			//기존 메인 이미지 삭제
-			System.out.println("여긴가?"+product.getRepImg().getOriginalFilename());
-			fileManager.delFile(new File(fileManager.getSaveBasicDir()+File.separator+product.getProduct_id()+"."+product.getFilename()));			
-			System.out.println("여긴가?"+product.getFilename());
+			//System.out.println("RepImg : "+product.getRepImg().getOriginalFilename());
+			//fileManager.delFile(new File(fileManager.getSaveBasicDir()+File.separator+product.getProduct_id()+"."+product.getFilename()));			
+			//System.out.println("여긴가?"+product.getFilename());
 			//메인 이미지 재등록
 			String ext=fileManager.getExtend(product.getRepImg().getOriginalFilename());
 			String basicImg = product.getProduct_id()+"."+ext;
